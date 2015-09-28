@@ -4,7 +4,7 @@
 #
 Name     : lzo
 Version  : 2.09
-Release  : 11
+Release  : 12
 URL      : http://www.oberhumer.com/opensource/lzo/download/lzo-2.09.tar.gz
 Source0  : http://www.oberhumer.com/opensource/lzo/download/lzo-2.09.tar.gz
 Summary  : No detailed summary available
