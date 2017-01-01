@@ -4,7 +4,7 @@
 #
 Name     : lzo
 Version  : 2.09
-Release  : 14
+Release  : 15
 URL      : http://www.oberhumer.com/opensource/lzo/download/lzo-2.09.tar.gz
 Source0  : http://www.oberhumer.com/opensource/lzo/download/lzo-2.09.tar.gz
 Summary  : No detailed summary available
@@ -22,6 +22,7 @@ LZO -- a real-time data compression library
 Summary: dev components for the lzo package.
 Group: Development
 Requires: lzo-lib
+Provides: lzo-devel
 
 %description dev
 dev components for the lzo package.
@@ -47,13 +48,23 @@ lib components for the lzo package.
 %setup -q -n lzo-2.09
 
 %build
+export LANG=C
+export SOURCE_DATE_EPOCH=1483307607
+export AR=gcc-ar
+export RANLIB=gcc-ranlib
+export NM=gcc-nm
+export CFLAGS="$CFLAGS -O3 -falign-functions=32 -ffat-lto-objects -flto -fno-semantic-interposition "
+export FCFLAGS="$CFLAGS -O3 -falign-functions=32 -ffat-lto-objects -flto -fno-semantic-interposition "
+export FFLAGS="$CFLAGS -O3 -falign-functions=32 -ffat-lto-objects -flto -fno-semantic-interposition "
+export CXXFLAGS="$CXXFLAGS -O3 -falign-functions=32 -ffat-lto-objects -flto -fno-semantic-interposition "
 %configure --disable-static --enable-shared
 make V=1  %{?_smp_mflags}
 
 %check
+export LANG=C
 export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
-export no_proxy=intel.com,localhost
+export no_proxy=localhost
 make test
 
 %install
@@ -78,7 +89,7 @@ rm -rf %{buildroot}
 /usr/include/lzo/lzoconf.h
 /usr/include/lzo/lzodefs.h
 /usr/include/lzo/lzoutil.h
-/usr/lib64/*.so
+/usr/lib64/liblzo2.so
 
 %files doc
 %defattr(-,root,root,-)
@@ -86,4 +97,5 @@ rm -rf %{buildroot}
 
 %files lib
 %defattr(-,root,root,-)
-/usr/lib64/*.so.*
+/usr/lib64/liblzo2.so.2
+/usr/lib64/liblzo2.so.2.0.0
