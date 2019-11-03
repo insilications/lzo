@@ -4,7 +4,7 @@
 #
 Name     : lzo
 Version  : 2.10
-Release  : 21
+Release  : 22
 URL      : http://www.oberhumer.com/opensource/lzo/download/lzo-2.10.tar.gz
 Source0  : http://www.oberhumer.com/opensource/lzo/download/lzo-2.10.tar.gz
 Summary  : LZO - a real-time data compression library
