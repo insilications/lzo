@@ -5,7 +5,7 @@
 %define keepstatic 1
 Name     : lzo
 Version  : 2.10
-Release  : 3
+Release  : 4
 URL      : http://www.oberhumer.com/opensource/lzo/download/lzo-2.10.tar.gz
 Source0  : http://www.oberhumer.com/opensource/lzo/download/lzo-2.10.tar.gz
 Summary  : LZO - a real-time data compression library
@@ -67,11 +67,11 @@ unset http_proxy
 unset https_proxy
 unset no_proxy
 export LANG=C.UTF-8
-export SOURCE_DATE_EPOCH=1594650072
+export SOURCE_DATE_EPOCH=1594689936
 export GCC_IGNORE_WERROR=1
 ## altflags_pgo content
 ## pgo generate
-export PGO_GEN="-fprofile-generate -fprofile-dir=/var/tmp/pgo -fprofile-update=atomic -fprofile-abs-path -fprofile-arcs -ftest-coverage --coverage -fprofile-partial-training"
+export PGO_GEN="-fprofile-generate=/var/tmp/pgo -fprofile-dir=/var/tmp/pgo -fprofile-abs-path -fprofile-update=atomic -fprofile-arcs -ftest-coverage --coverage -fprofile-partial-training"
 export CFLAGS_GENERATE="-O3 -march=native -mtune=native -falign-functions=32 -fno-semantic-interposition -fno-stack-protector -fuse-ld=bfd -fuse-linker-plugin -malign-data=cacheline -mtls-dialect=gnu2 -fno-math-errno -fno-trapping-math -pipe $PGO_GEN"
 export FCFLAGS_GENERATE="-O3 -march=native -mtune=native -falign-functions=32 -fno-semantic-interposition -fno-stack-protector -fuse-ld=bfd -fuse-linker-plugin -malign-data=cacheline -mtls-dialect=gnu2 -fno-math-errno -fno-trapping-math -pipe $PGO_GEN"
 export FFLAGS_GENERATE="-O3 -march=native -mtune=native -falign-functions=32 -fno-semantic-interposition -fno-stack-protector -fuse-ld=bfd -fuse-linker-plugin -malign-data=cacheline -mtls-dialect=gnu2 -fno-math-errno -fno-trapping-math -pipe $PGO_GEN"
@@ -80,7 +80,7 @@ export LDFLAGS_GENERATE="-O3 -march=native -mtune=native -falign-functions=32 -f
 ## pgo use
 ## -ffat-lto-objects -fno-PIE -fno-PIE -m64 -no-pie -fpic -fvisibility=hidden
 ## gcc: -feliminate-unused-debug-types -fipa-pta -flto=16 -fno-common -Wno-error -Wp,-D_REENTRANT
-export PGO_USE="-fprofile-use -fprofile-dir=/var/tmp/pgo -fprofile-correction -fprofile-partial-training"
+export PGO_USE="-fprofile-use=/var/tmp/pgo -fprofile-dir=/var/tmp/pgo -fprofile-abs-path -fprofile-correction -fprofile-partial-training"
 export CFLAGS_USE="-g -O3 -march=native -mtune=native -fgraphite-identity -Wall -Wl,--as-needed -Wl,--build-id=sha1 -Wl,--enable-new-dtags -Wl,--hash-style=gnu -Wl,-O2 -Wl,-z,now -Wl,-z,relro -falign-functions=32 -fasynchronous-unwind-tables -fdevirtualize-at-ltrans -floop-nest-optimize -fno-math-errno -fno-semantic-interposition -fno-stack-protector -fno-trapping-math -ftree-loop-distribute-patterns -ftree-loop-vectorize -ftree-vectorize -funroll-loops -fuse-ld=bfd -fuse-linker-plugin -malign-data=cacheline -fno-common -feliminate-unused-debug-types -fipa-pta -flto=16 -fno-plt -mtls-dialect=gnu2 -Wl,-sort-common -Wno-error -Wp,-D_REENTRANT -pipe $PGO_USE"
 export FCFLAGS_USE="-g -O3 -march=native -mtune=native -fgraphite-identity -Wall -Wl,--as-needed -Wl,--build-id=sha1 -Wl,--enable-new-dtags -Wl,--hash-style=gnu -Wl,-O2 -Wl,-z,now -Wl,-z,relro -falign-functions=32 -fasynchronous-unwind-tables -fdevirtualize-at-ltrans -floop-nest-optimize -fno-math-errno -fno-semantic-interposition -fno-stack-protector -fno-trapping-math -ftree-loop-distribute-patterns -ftree-loop-vectorize -ftree-vectorize -funroll-loops -fuse-ld=bfd -fuse-linker-plugin -malign-data=cacheline -fno-common -feliminate-unused-debug-types -fipa-pta -flto=16 -fno-plt -mtls-dialect=gnu2 -Wl,-sort-common -Wno-error -Wp,-D_REENTRANT -pipe $PGO_USE"
 export FFLAGS_USE="-g -O3 -march=native -mtune=native -fgraphite-identity -Wall -Wl,--as-needed -Wl,--build-id=sha1 -Wl,--enable-new-dtags -Wl,--hash-style=gnu -Wl,-O2 -Wl,-z,now -Wl,-z,relro -falign-functions=32 -fasynchronous-unwind-tables -fdevirtualize-at-ltrans -floop-nest-optimize -fno-math-errno -fno-semantic-interposition -fno-stack-protector -fno-trapping-math -ftree-loop-distribute-patterns -ftree-loop-vectorize -ftree-vectorize -funroll-loops -fuse-ld=bfd -fuse-linker-plugin -malign-data=cacheline -fno-common -feliminate-unused-debug-types -fipa-pta -flto=16 -fno-plt -mtls-dialect=gnu2 -Wl,-sort-common -Wno-error -Wp,-D_REENTRANT -pipe $PGO_USE"
@@ -101,7 +101,7 @@ make  %{?_smp_mflags}  V=1 VERBOSE=1
 
 make -j16 check
 make -j16 test
-make distclean
+make clean
 export CFLAGS="${CFLAGS_USE}"
 export CXXFLAGS="${CXXFLAGS_USE}"
 export FFLAGS="${FFLAGS_USE}"
@@ -119,7 +119,7 @@ make -j16 check
 make -j16 test
 
 %install
-export SOURCE_DATE_EPOCH=1594650072
+export SOURCE_DATE_EPOCH=1594689936
 rm -rf %{buildroot}
 %make_install
 
@@ -141,7 +141,6 @@ rm -rf %{buildroot}
 /usr/include/lzo/lzoconf.h
 /usr/include/lzo/lzodefs.h
 /usr/include/lzo/lzoutil.h
-/usr/lib64/liblzo2.so
 /usr/lib64/pkgconfig/lzo2.pc
 
 %files doc
@@ -150,6 +149,7 @@ rm -rf %{buildroot}
 
 %files lib
 %defattr(-,root,root,-)
+/usr/lib64/liblzo2.so
 /usr/lib64/liblzo2.so.2
 /usr/lib64/liblzo2.so.2.0.0
 
