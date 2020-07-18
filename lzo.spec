@@ -5,7 +5,7 @@
 %define keepstatic 1
 Name     : lzo
 Version  : 2.10
-Release  : 4
+Release  : 5
 URL      : http://www.oberhumer.com/opensource/lzo/download/lzo-2.10.tar.gz
 Source0  : http://www.oberhumer.com/opensource/lzo/download/lzo-2.10.tar.gz
 Summary  : LZO - a real-time data compression library
@@ -67,7 +67,7 @@ unset http_proxy
 unset https_proxy
 unset no_proxy
 export LANG=C.UTF-8
-export SOURCE_DATE_EPOCH=1594689936
+export SOURCE_DATE_EPOCH=1595087100
 export GCC_IGNORE_WERROR=1
 ## altflags_pgo content
 ## pgo generate
@@ -119,7 +119,7 @@ make -j16 check
 make -j16 test
 
 %install
-export SOURCE_DATE_EPOCH=1594689936
+export SOURCE_DATE_EPOCH=1595087100
 rm -rf %{buildroot}
 %make_install
 
