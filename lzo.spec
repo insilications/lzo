@@ -5,7 +5,7 @@
 %define keepstatic 1
 Name     : lzo
 Version  : 2.10
-Release  : 5
+Release  : 6
 URL      : http://www.oberhumer.com/opensource/lzo/download/lzo-2.10.tar.gz
 Source0  : http://www.oberhumer.com/opensource/lzo/download/lzo-2.10.tar.gz
 Summary  : LZO - a real-time data compression library
@@ -13,6 +13,12 @@ Group    : Development/Tools
 License  : GPL-2.0 GPL-2.0+
 Requires: lzo-lib = %{version}-%{release}
 BuildRequires : buildreq-configure
+BuildRequires : findutils
+BuildRequires : gcc-dev32
+BuildRequires : gcc-libgcc32
+BuildRequires : gcc-libstdc++32
+BuildRequires : glibc-dev32
+BuildRequires : glibc-libc32
 # Suppress stripping binaries
 %define __strip /bin/true
 %define debug_package %{nil}
@@ -33,6 +39,16 @@ Requires: lzo = %{version}-%{release}
 dev components for the lzo package.
 
 
+%package dev32
+Summary: dev32 components for the lzo package.
+Group: Default
+Requires: lzo-lib32 = %{version}-%{release}
+Requires: lzo-dev = %{version}-%{release}
+
+%description dev32
+dev32 components for the lzo package.
+
+
 %package doc
 Summary: doc components for the lzo package.
 Group: Documentation
@@ -49,6 +65,14 @@ Group: Libraries
 lib components for the lzo package.
 
 
+%package lib32
+Summary: lib32 components for the lzo package.
+Group: Default
+
+%description lib32
+lib32 components for the lzo package.
+
+
 %package staticdev
 Summary: staticdev components for the lzo package.
 Group: Default
@@ -58,16 +82,28 @@ Requires: lzo-dev = %{version}-%{release}
 staticdev components for the lzo package.
 
 
+%package staticdev32
+Summary: staticdev32 components for the lzo package.
+Group: Default
+Requires: lzo-dev = %{version}-%{release}
+
+%description staticdev32
+staticdev32 components for the lzo package.
+
+
 %prep
 %setup -q -n lzo-2.10
 cd %{_builddir}/lzo-2.10
+pushd ..
+cp -a lzo-2.10 build32
+popd
 
 %build
 unset http_proxy
 unset https_proxy
 unset no_proxy
 export LANG=C.UTF-8
-export SOURCE_DATE_EPOCH=1595087100
+export SOURCE_DATE_EPOCH=1596176692
 export GCC_IGNORE_WERROR=1
 ## altflags_pgo content
 ## pgo generate
@@ -99,8 +135,8 @@ export LDFLAGS="${LDFLAGS_GENERATE}"
 %configure  --enable-shared --enable-static
 make  %{?_smp_mflags}  V=1 VERBOSE=1
 
-make -j16 check
-make -j16 test
+V=1 VERBOSE=1 make -j16 check
+V=1 VERBOSE=1 make -j16 test
 make clean
 export CFLAGS="${CFLAGS_USE}"
 export CXXFLAGS="${CXXFLAGS_USE}"
@@ -110,17 +146,36 @@ export LDFLAGS="${LDFLAGS_USE}"
 %configure  --enable-shared --enable-static
 make  %{?_smp_mflags}  V=1 VERBOSE=1
 
+pushd ../build32/
+export PKG_CONFIG_PATH="/usr/lib32/pkgconfig"
+export ASFLAGS="${ASFLAGS}${ASFLAGS:+ }--32"
+export CFLAGS="${CFLAGS}${CFLAGS:+ }-m32 -mstackrealign"
+export CXXFLAGS="${CXXFLAGS}${CXXFLAGS:+ }-m32 -mstackrealign"
+export LDFLAGS="${LDFLAGS}${LDFLAGS:+ }-m32 -mstackrealign"
+%configure  --enable-shared --enable-static   --libdir=/usr/lib32 --build=i686-generic-linux-gnu --host=i686-generic-linux-gnu --target=i686-clr-linux-gnu
+make  %{?_smp_mflags}  V=1 VERBOSE=1
+popd
+
 %check
 export LANG=C.UTF-8
 unset http_proxy
 unset https_proxy
 unset no_proxy
-make -j16 check
-make -j16 test
+V=1 VERBOSE=1 make -j16 check
+V=1 VERBOSE=1 make -j16 test
 
 %install
-export SOURCE_DATE_EPOCH=1595087100
+export SOURCE_DATE_EPOCH=1596176692
 rm -rf %{buildroot}
+pushd ../build32/
+%make_install32
+if [ -d  %{buildroot}/usr/lib32/pkgconfig ]
+then
+pushd %{buildroot}/usr/lib32/pkgconfig
+for i in *.pc ; do ln -s $i 32$i ; done
+popd
+fi
+popd
 %make_install
 
 %files
@@ -143,6 +198,11 @@ rm -rf %{buildroot}
 /usr/include/lzo/lzoutil.h
 /usr/lib64/pkgconfig/lzo2.pc
 
+%files dev32
+%defattr(-,root,root,-)
+/usr/lib32/pkgconfig/32lzo2.pc
+/usr/lib32/pkgconfig/lzo2.pc
+
 %files doc
 %defattr(0644,root,root,0755)
 %doc /usr/share/doc/lzo/*
@@ -153,6 +213,16 @@ rm -rf %{buildroot}
 /usr/lib64/liblzo2.so.2
 /usr/lib64/liblzo2.so.2.0.0
 
+%files lib32
+%defattr(-,root,root,-)
+/usr/lib32/liblzo2.so
+/usr/lib32/liblzo2.so.2
+/usr/lib32/liblzo2.so.2.0.0
+
 %files staticdev
 %defattr(-,root,root,-)
 /usr/lib64/liblzo2.a
+
+%files staticdev32
+%defattr(-,root,root,-)
+/usr/lib32/liblzo2.a
