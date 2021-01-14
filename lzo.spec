@@ -5,7 +5,7 @@
 %define keepstatic 1
 Name     : lzo
 Version  : 2.10
-Release  : 7
+Release  : 8
 URL      : http://www.oberhumer.com/opensource/lzo/download/lzo-2.10.tar.gz
 Source0  : http://www.oberhumer.com/opensource/lzo/download/lzo-2.10.tar.gz
 Summary  : LZO - a real-time data compression library
@@ -34,6 +34,8 @@ Group: Development
 Requires: lzo-lib = %{version}-%{release}
 Provides: lzo-devel = %{version}-%{release}
 Requires: lzo = %{version}-%{release}
+Requires: lzo-dev = %{version}-%{release}
+Requires: lzo-dev32 = %{version}-%{release}
 
 %description dev
 dev components for the lzo package.
@@ -44,6 +46,7 @@ Summary: dev32 components for the lzo package.
 Group: Default
 Requires: lzo-lib32 = %{version}-%{release}
 Requires: lzo-dev = %{version}-%{release}
+Requires: lzo-dev32 = %{version}-%{release}
 
 %description dev32
 dev32 components for the lzo package.
@@ -77,6 +80,7 @@ lib32 components for the lzo package.
 Summary: staticdev components for the lzo package.
 Group: Default
 Requires: lzo-dev = %{version}-%{release}
+Requires: lzo-dev32 = %{version}-%{release}
 
 %description staticdev
 staticdev components for the lzo package.
@@ -85,7 +89,7 @@ staticdev components for the lzo package.
 %package staticdev32
 Summary: staticdev32 components for the lzo package.
 Group: Default
-Requires: lzo-dev = %{version}-%{release}
+Requires: lzo-dev32 = %{version}-%{release}
 
 %description staticdev32
 staticdev32 components for the lzo package.
@@ -102,8 +106,9 @@ popd
 unset http_proxy
 unset https_proxy
 unset no_proxy
+export SSL_CERT_FILE=/var/cache/ca-certs/anchors/ca-certificates.crt
 export LANG=C.UTF-8
-export SOURCE_DATE_EPOCH=1598781194
+export SOURCE_DATE_EPOCH=1610598824
 export GCC_IGNORE_WERROR=1
 ## altflags_pgo content
 ## pgo generate
@@ -128,8 +133,8 @@ export NM=gcc-nm
 #
 export MAKEFLAGS=%{?_smp_mflags}
 #
-%define _lto_cflags 1
-#%define _lto_cflags %{nil}
+%global _lto_cflags 1
+#global _lto_cflags %{nil}
 #
 # export PATH="/usr/lib64/ccache/bin:$PATH"
 # export CCACHE_NOHASHDIR=1
@@ -137,9 +142,6 @@ export MAKEFLAGS=%{?_smp_mflags}
 # export CCACHE_SLOPPINESS=pch_defines,locale,time_macros
 # export CCACHE_DISABLE=1
 ## altflags_pgo end
-##
-%define _lto_cflags 1
-##
 export CFLAGS="${CFLAGS_GENERATE}"
 export CXXFLAGS="${CXXFLAGS_GENERATE}"
 export FFLAGS="${FFLAGS_GENERATE}"
@@ -160,9 +162,9 @@ export LDFLAGS="${LDFLAGS_USE}"
 make  %{?_smp_mflags}  V=1 VERBOSE=1
 
 pushd ../build32/
-export CFLAGS="-g -O2 -fuse-linker-plugin -pipe"
-export CXXFLAGS="-g -O2 -fuse-linker-plugin -fvisibility-inlines-hidden -pipe"
-export LDFLAGS="-g -O2 -fuse-linker-plugin -pipe"
+export CFLAGS="-O2 -ffat-lto-objects -fuse-linker-plugin -pipe -fPIC -m32 -mstackrealign -march=native -mtune=native"
+export CXXFLAGS="-O2 -ffat-lto-objects -fuse-linker-plugin -fvisibility-inlines-hidden -pipe -fPIC -m32 -mstackrealign -march=native -mtune=native"
+export LDFLAGS="-O2 -ffat-lto-objects -fuse-linker-plugin -pipe -fPIC -m32 -mstackrealign -march=native -mtune=native"
 export AR=gcc-ar
 export RANLIB=gcc-ranlib
 export NM=gcc-nm
@@ -181,11 +183,12 @@ export LANG=C.UTF-8
 unset http_proxy
 unset https_proxy
 unset no_proxy
-V=1 VERBOSE=1 make -j16 check
+export SSL_CERT_FILE=/var/cache/ca-certs/anchors/ca-certificates.crt
+V=1 VERBOSE=1 make -j16 check 
 V=1 VERBOSE=1 make -j16 test
 
 %install
-export SOURCE_DATE_EPOCH=1598781194
+export SOURCE_DATE_EPOCH=1610598824
 rm -rf %{buildroot}
 pushd ../build32/
 %make_install32
