@@ -36,7 +36,6 @@ BuildRequires : gcc-libubsan
 BuildRequires : gcc-locale
 BuildRequires : gdb-dev
 BuildRequires : git
-BuildRequires : glibc-abi
 BuildRequires : glibc-bench
 BuildRequires : glibc-bin
 BuildRequires : glibc-dev
@@ -50,13 +49,11 @@ BuildRequires : glibc-nscd
 BuildRequires : glibc-staticdev
 BuildRequires : glibc-utils
 BuildRequires : gmp-dev
-BuildRequires : gmp-staticdev
 BuildRequires : graphviz
 BuildRequires : guile
 BuildRequires : libedit
 BuildRequires : libedit-dev
 BuildRequires : libffi-dev
-BuildRequires : libffi-staticdev
 BuildRequires : libgcc1
 BuildRequires : libstdc++
 BuildRequires : libunwind
@@ -146,7 +143,7 @@ unset https_proxy
 unset no_proxy
 export SSL_CERT_FILE=/var/cache/ca-certs/anchors/ca-certificates.crt
 export LANG=C.UTF-8
-export SOURCE_DATE_EPOCH=1618655502
+export SOURCE_DATE_EPOCH=1620021229
 export GCC_IGNORE_WERROR=1
 ## altflags_pgo content
 ## pgo generate
@@ -226,25 +223,16 @@ export LDFLAGS="${LDFLAGS}${LDFLAGS:+ }-m32 -mstackrealign"
 make  %{?_smp_mflags}  V=1 VERBOSE=1
 popd
 
-%check
-export LANG=C.UTF-8
-unset http_proxy
-unset https_proxy
-unset no_proxy
-export SSL_CERT_FILE=/var/cache/ca-certs/anchors/ca-certificates.crt
-V=1 VERBOSE=1 make -j16 check 
-V=1 VERBOSE=1 make -j16 test
-
 %install
-export SOURCE_DATE_EPOCH=1618655502
+export SOURCE_DATE_EPOCH=1620021229
 rm -rf %{buildroot}
 pushd ../build32/
 %make_install32
 if [ -d  %{buildroot}/usr/lib32/pkgconfig ]
 then
-pushd %{buildroot}/usr/lib32/pkgconfig
-for i in *.pc ; do ln -s $i 32$i ; done
-popd
+    pushd %{buildroot}/usr/lib32/pkgconfig
+    for i in *.pc ; do ln -s $i 32$i ; done
+    popd
 fi
 popd
 %make_install
